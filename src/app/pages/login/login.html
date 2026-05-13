@@ -1,0 +1,36 @@
+<form class="form" (ngSubmit)="login()">
+
+  <p class="heading">LOGIN</p>
+
+  <input
+    placeholder="Email"
+    class="input"
+    type="text"
+    name="email"
+    [(ngModel)]="email"
+    required
+  >
+
+  <input
+    placeholder="Password"
+    class="input"
+    type="password"
+    name="password"
+    [(ngModel)]="password"
+    required
+  >
+
+  <button type="button" (click)="signup()" class="btn">
+  Sign Up
+</button>
+  
+  <button class="google-btn" (click)="signInWithGoogle()">
+  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" />
+  Continue with Google
+</button>
+
+  <button class="btn" type="submit">
+    Submit
+  </button>
+
+</form>

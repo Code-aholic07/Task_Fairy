@@ -1,0 +1,9 @@
+<!-- Minimalistic SVG icons for filter and sort -->
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="icon-filter" viewBox="0 0 24 24">
+    <path d="M3 5h18M6 12h12M10 19h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </symbol>
+  <symbol id="icon-sort" viewBox="0 0 24 24">
+    <path d="M6 9l6-6 6 6M6 15l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </symbol>
+</svg>

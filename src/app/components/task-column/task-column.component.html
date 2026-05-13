@@ -1,0 +1,124 @@
+
+<div class="column">
+  
+  <div class="column-header" cdkDragHandle>
+    <h3 class="column-title">
+      <span *ngIf="!editingName" (click)="editingName = true">{{ title }}</span>
+      <input *ngIf="editingName" [(ngModel)]="title" (blur)="onColumnRename(title)" (keydown.enter)="onColumnRename(title)" />
+      <span class="count">{{ filteredTasks.length }}</span>
+    </h3>
+    <button 
+  [class.show]="isEditMode"
+  class="delete-col"
+  (click)="deleteColumn.emit(columnId)">
+  ❌
+</button>
+  </div>
+
+  <div class="task-list"
+       cdkDropList
+       [id]="listId"
+       [cdkDropListData]="filteredTasks"
+       [cdkDropListConnectedTo]="connectedListIds"
+       (cdkDropListDropped)="onDrop($event)">
+
+    <div *ngFor="let task of filteredTasks; trackBy: trackByFn"
+         class="task-card"
+         cdkDrag
+         [cdkDragData]="task"
+         [ngClass]="task.priority">
+
+      <!-- TOP ROW -->
+      <!-- TOP ROW - DUE DATE LEFT, PRIORITY TOP-RIGHT -->
+<div class="task-top">
+  <!-- Due date where priority used to be (LEFT SIDE) -->
+  <span *ngIf="task.dueDate" class="due">
+    Due: {{ getDueDateDisplay(task.dueDate) }}
+  </span>
+  
+  <!-- Priority moved to absolute TOP-RIGHT CORNER -->
+  <div class="priority-absolute">
+    <div class="priority-dropdown">
+      <button 
+  class="priority-btn"
+  [ngClass]="task.priority"
+  type="button"
+  #priorityBtn
+  (click)="togglePriority(priorityBtn, task)"
+>
+  {{ task.priority }}
+</button>
+      <div class="priority-menu" *ngIf="activePriorityTask === task">
+        <button class="priority-option low" (click)="setPriority(task, 'low')">Low</button>
+        <button class="priority-option medium" (click)="setPriority(task, 'medium')">Medium</button>
+        <button class="priority-option high" (click)="setPriority(task, 'high')">High</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      <!-- MAIN CONTENT -->
+      <div class="task-main">
+        <label class="container">
+  <input type="checkbox" [checked]="task.completed" (change)="task.completed = $event.target.checked; saveCompletion(task)" />
+  <div class="checkmark"></div>
+</label>
+        <div class="task-content">
+          <h4 class="task-title">{{ task.title }}</h4>
+          <p *ngIf="task.description" class="task-desc">{{ task.description }}</p>
+          <!-- SUBTASKS -->
+<div *ngIf="task.subtasks?.length" class="subtasks">
+  <div class="subtask" *ngFor="let sub of task.subtasks">
+    
+    <input 
+      type="checkbox" 
+      [(ngModel)]="sub.completed"
+      (change)="completionChanged.emit(task)"
+    />
+
+    <span [class.completed]="sub.completed">
+      {{ sub.title }}
+    </span>
+
+  </div>
+</div>
+        </div>
+      </div>
+
+      <!-- MEDIA -->
+      <div *ngIf="task.media?.length" class="media">
+        <ng-container *ngFor="let m of task.media">
+          <img *ngIf="m.type==='image'" [src]="m.url" class="media-item">
+          <video *ngIf="m.type==='video'" [src]="m.url" controls class="media-item"></video>
+        </ng-container>
+      </div>
+
+      <!-- ACTION BUTTONS -->
+    
+<div class="task-actions">
+
+  <!-- NORMAL MODE → EDIT -->
+  <button 
+    *ngIf="!isEditMode"
+    class="box-button"
+    type="button"
+    (click)="edit.emit(task)">
+    <span class="face">EDIT</span>
+  </button>
+
+  <!-- EDIT MODE → DELETE -->
+  <button 
+    *ngIf="isEditMode"
+    class="delete-btn"
+    (click)="remove.emit(task)">
+  </button>
+
+</div>
+
+
+    <div *ngIf="filteredTasks.length === 0" class="empty">
+      Nothing here yet 🌱
+    </div>
+  </div>
+</div>

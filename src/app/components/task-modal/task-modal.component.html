@@ -1,0 +1,183 @@
+<div class="overlay" (click)="close.emit()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+
+    <h2>🌱 Plant New Task</h2>
+
+    <!-- TITLE -->
+    <div class="field">
+      <label>Title</label>
+      <input [(ngModel)]="title" placeholder="What needs to be done?" />
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="field">
+      <label>Description</label>
+      <textarea [(ngModel)]="description" placeholder="Optional notes..."></textarea>
+    </div>
+
+    <!-- SUBTASKS -->
+<div class="field">
+  <label>Subtasks</label>
+
+  <!-- INPUT -->
+  <div class="subtask-input">
+    <input [(ngModel)]="newSubtask" placeholder="Add a subtask..." />
+    <button type="button" (click)="addSubtask()">Add</button>
+  </div>
+
+  <!-- EMPTY -->
+  <p *ngIf="subtasks.length === 0" class="empty-subtasks">
+    No subtasks yet
+  </p>
+
+  <!-- LIST -->
+  <div class="subtask-list">
+    <div class="subtask-item" *ngFor="let sub of subtasks; let i = index">
+      <input type="checkbox" [(ngModel)]="sub.completed" />
+      
+      <span [class.completed]="sub.completed">
+        {{ sub.title }}
+      </span>
+
+      <button (click)="removeSubtask(i)">✕</button>
+    </div>
+  </div>
+</div>
+
+    <!-- COLUMN -->
+    <div class="field">
+      <label>Column</label>
+      <select [(ngModel)]="selectedColumnId">
+        <option *ngFor="let col of columns" [value]="col.id">
+          {{ col.title }}
+        </option>
+      </select>
+    </div>
+
+    <!-- PRIORITY (SEGMENTED CONTROL) -->
+    <div class="field">
+      <label>Priority</label>
+
+  <div class="tw-toggle">
+
+    <input type="radio" name="priority"
+      [checked]="priority === 'low'"
+      (change)="priority = 'low'">
+
+    <label>Low</label>
+
+    <input type="radio" name="priority"
+      [checked]="priority === 'medium'"
+      (change)="priority = 'medium'">
+
+    <label>Medium</label>
+
+    <input type="radio" name="priority"
+      [checked]="priority === 'high'"
+      (change)="priority = 'high'">
+
+    <label>High</label>
+
+    <span></span>
+  </div>
+
+    </div>
+
+    <!-- DATE WITH SMART LABEL -->
+    <div class="field">
+      <label>Due Date</label>
+
+      <div class="date-field">
+        <span class="icon">📅</span>
+        <input type="date" [(ngModel)]="dueDate" />
+        <span class="date-label" *ngIf="dueDate">
+          {{
+            (dueDate === (today | date:'yyyy-MM-dd')) ? 'Today' :
+            (dueDate === (tomorrow | date:'yyyy-MM-dd')) ? 'Tomorrow' :
+            ''
+          }}
+        </span>
+      </div>
+    </div>
+
+    <!-- MEDIA -->
+    <!-- MEDIA -->
+<div class="field">
+  <label>Media</label>
+
+  <!-- ADD MEDIA -->
+  <div class="media-input">
+    <select [(ngModel)]="newMediaType">
+      <option value="image">Image</option>
+      <option value="video">Video</option>
+    </select>
+
+    <input [(ngModel)]="newMediaUrl" placeholder="Paste URL..." />
+
+    <button type="button" (click)="addMedia()">Add</button>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <p *ngIf="mediaItems.length === 0" class="empty-media">
+    No media added yet
+  </p>
+
+  <!-- PREVIEW GRID -->
+  <div class="media-preview" *ngIf="mediaItems.length > 0">
+
+    <div 
+      class="media-item"
+      *ngFor="let item of mediaItems; let i = index"
+      draggable="true"
+      (dragstart)="onDragStart(i)"
+      (dragover)="$event.preventDefault()"
+      (drop)="onDrop(i)"
+    >
+
+      <!-- IMAGE -->
+      <img *ngIf="item.type === 'image'" [src]="item.url" />
+
+      <!-- VIDEO -->
+      <video *ngIf="item.type === 'video'" [src]="item.url" muted></video>
+
+      <!-- REMOVE -->
+      <button 
+        class="remove-btn"
+        (click)="removeMedia(i); $event.stopPropagation()">
+        ✕
+      </button>
+
+      <!-- DRAG HANDLE -->
+      <div class="drag-handle">⋮⋮</div>
+
+    </div>
+
+  </div>
+
+  <!-- FILE UPLOAD -->
+  <div 
+    class="file-upload"
+    (dragover)="$event.preventDefault()"
+    (drop)="onFileDrop($event)">
+
+    <p>📂 Drag & drop or click to upload</p>
+
+    <input 
+      type="file" 
+      accept="image/*,video/*" 
+      (change)="onFileSelected($event)" />
+  </div>
+
+</div>
+    <!-- ACTIONS -->
+    <div class="actions">
+      <button class="cancel" (click)="close.emit()">Cancel</button>
+      <button class="save" [disabled]="isSubmitting" (click)="saveTask()">
+        🌿 Plant Task
+      </button>
+    </div>
+
+  </div>
+  </div>
+</div>

@@ -1,0 +1,223 @@
+<div class="board-page">
+  <!-- ☁️ CLOUD BACKGROUND -->
+  <div class="clouds">
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="cloud cloud3"></div>
+  </div>
+
+  <div class="board-content">
+
+    <!-- 🔥 TOP BAR -->
+    <div class="top-bar">
+
+      <!-- Left: Search + Filter + Sort -->
+      <div class="search-bar">
+
+        <!-- Search input -->
+        <input type="text"
+               [(ngModel)]="searchTerm"
+               placeholder="🔍 Search tasks..."
+               class="search-input" />
+
+        <!-- Filter dropdown (UNCHANGED) -->
+        <div class="dropdown-wrapper">
+          <button class="icon-btn" (click)="toggleFilter()" aria-label="Filter tasks">
+            Filter 📂
+          </button>
+          <div class="dropdown-menu" *ngIf="showFilter">
+            <button class="dropdown-item" (click)="filterMode='all'; showFilter=false">All Tasks</button>
+            <button class="dropdown-item" (click)="filterMode='checked'; showFilter=false">Checked (Done)</button>
+            <button class="dropdown-item" (click)="filterMode='unchecked'; showFilter=false">Unchecked (Active)</button>
+            <button class="dropdown-item" (click)="filterMode='high'; showFilter=false">High Priority</button>
+            <button class="dropdown-item" (click)="filterMode='medium'; showFilter=false">Medium Priority</button>
+            <button class="dropdown-item" (click)="filterMode='low'; showFilter=false">Low Priority</button>
+            <button class="dropdown-item" (click)="filterMode='due-today'; showFilter=false">Due Today</button>
+          </div>
+        </div>
+
+        <!-- Sort dropdown (UNCHANGED) -->
+        <div class="dropdown-wrapper">
+          <button class="icon-btn" (click)=toggleSort() aria-label="Sort tasks">
+            Sort🗂️
+          </button>
+          <div class="dropdown-menu" *ngIf="showSort">
+            <button class="dropdown-item" (click)="sortMode='priority-high-low'; showSort=false">Priority: High-Low</button>
+            <button class="dropdown-item" (click)="sortMode='priority-low-high'; showSort=false">Priority: Low-High</button>
+            <button class="dropdown-item" (click)="sortMode='due-soon'; showSort=false">Due Soon</button>
+            <button class="dropdown-item" (click)="sortMode='past-due'; showSort=false">Past Due</button>
+            <button class="dropdown-item" (click)="sortMode='due-last'; showSort=false">Due Last</button>
+            <button class="dropdown-item" (click)="sortMode='alphabetical'; showSort=false">Alphabetical</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right: Profile -->
+      <div class="profile-container">
+
+        <!-- ✅ FIXED AVATAR ONLY -->
+        <div class="avatar" (click)="toggleMenu()" *ngIf="currentUser as user">
+
+          <img 
+            *ngIf="user.photoURL; else fallbackAvatar"
+            [src]="user.photoURL"
+            alt="avatar"
+            (error)="onImgError($event)"
+          />
+
+          <ng-template #fallbackAvatar>
+            <div class="avatar-placeholder">
+              {{ user.displayName?.[0] || 'U' }}
+            </div>
+          </ng-template>
+
+        </div>
+
+        <!-- Dropdown (UNCHANGED) -->
+        <div class="dropdown" *ngIf="menuOpen">
+          <div class="section">
+            <div class="label">Account</div>
+            <div class="name">{{ currentUser?.displayName || 'User' }}</div>
+            <div class="email">{{ currentUser?.email || '' }}</div>
+          </div>
+
+          <div class="item" (click)="switchAccount()">Switch account</div>
+          <div class="item" (click)="openAccountModal()">Manage account</div>
+
+          <label class="item">
+            Change Avatar
+            <input type="file"
+                   (change)="uploadAvatar($event)"
+                   accept="image/*"
+                   hidden>
+          </label>
+
+          <div class="divider"></div>
+          <div class="item">Activity</div>
+          <div class="item">Settings</div>
+
+          <div class="divider"></div>
+          <div class="item">Theme</div>
+          <div class="item">Shortcuts</div>
+
+          <div class="divider"></div>
+          <div class="item logout" (click)="logout()">Log out</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 🌱 ACTION BUTTON -->
+    <div class="board-header">
+      <button class="plant-btn" (click)="openModal()">
+        <span>Plant new task</span>
+      </button>
+    </div>
+
+    <!-- 🌿 COLUMNS (UNCHANGED) -->
+    <div class="columns-wrapper">
+      <div class="garden-columns"
+           cdkDropList
+           [cdkDropListData]="columns"
+           [cdkDropListOrientation]="'horizontal'"
+           (cdkDropListDropped)="dropColumn($event)">
+
+        <div *ngFor="let col of columns; trackBy: trackByColumn"
+             class="drop-zone"
+             cdkDrag
+             cdkDragLockAxis="x"
+             [id]="col.id">
+
+          <app-task-column
+            [isEditMode]="isEditMode"
+            [title]="col.title"
+            [columnId]="col.id"
+            [tasks]="filteredTasks"
+            [listId]="col.id"
+            [connectedListIds]="columnIds"
+            [columns]="columns"
+            (remove)="deleteTask($event)"
+            (edit)="startEdit($event)"
+            (deleteColumn)="deleteColumn(col.id)"
+            (dropped)="onTaskDropped($event)"
+            (renameColumn)="onColumnRenamed($event)"
+            (completionChanged)="onCompletionChanged($event)">
+          </app-task-column>
+
+        </div>
+      </div>
+
+      <app-task-modal
+        *ngIf="showModal"
+        [task]="editingTask"
+        [columns]="columns"
+        [initialColumnId]="editingColumnId"
+        (close)="showModal=false; editingTask=null"
+        (save)="saveTask($event)">
+      </app-task-modal>
+    </div>
+
+  </div>
+
+  <!-- Rest unchanged -->
+  <div class="undo-toast" *ngIf="showUndo">
+    <span>Task deleted</span>
+    <button (click)="undoDelete()">UNDO</button>
+  </div>
+
+  <div class="floating-split-btn">
+    <button class="split center" (click)="toggleEditMode()">
+      <span *ngIf="!isEditMode">Edit</span>
+      <span *ngIf="isEditMode">✔</span>
+    </button>
+    <button class="split right" (click)="addColumnAtEnd()">+</button>
+  </div>
+</div>
+
+<!-- ACCOUNT MODAL (only avatar fixed) -->
+<div class="modal-overlay" *ngIf="showAccountModal">
+  <div class="account-modal">
+
+    <h2>Manage Account</h2>
+
+    <div class="avatar-section" *ngIf="currentUser as user">
+      <img *ngIf="user.photoURL; else fallback2"
+           [src]="user.photoURL"
+           (error)="onImgError($event)">
+
+      <ng-template #fallback2>
+        <div class="avatar-placeholder">
+          {{ user.displayName?.[0] || 'U' }}
+        </div>
+      </ng-template>
+
+      <label class="upload-btn">
+        Change Photo
+        <input type="file" (change)="uploadAvatar($event)" hidden>
+      </label>
+    </div>
+
+    <div class="field">
+      <label>Email</label>
+      <input type="text" [value]="currentUser?.email" disabled>
+    </div>
+
+    <div class="field">
+      <label>Display Name</label>
+      <input type="text" [(ngModel)]="newDisplayName">
+    </div>
+
+    <div class="actions">
+      <button class="cancel" (click)="showAccountModal=false">Cancel</button>
+      <button class="save" (click)="saveAccountChanges()">Save</button>
+    </div>
+
+  </div>
+</div>
+
+<h1 class="neon-text">Task Fairy</h1>
+<img src="assets/plant.png" class="plant-decor" />
+<img src="assets/light.png" class="light-decor" />
+<img src="assets/light.png" class="light1-decor" />
+<img src="assets/light.png" class="light2-decor" />

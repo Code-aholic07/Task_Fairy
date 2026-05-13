@@ -1,1 +1,149 @@
-/* You can add global styles to this file, and also import other style files */
+
+/* CDK Drag Drop Styles */
+/* styles.css */
+@font-face {
+  font-family: 'MyFont';
+  src: url('/assets/SourceCodePro-VariableFont_wght.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+html,
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Anonymous Pro", monospace;
+}
+
+.main-content {
+  position: relative;
+  z-index: 1;
+}
+@font-face {
+  font-family: 'Moontime';
+  src: url('/assets/fonnts.com-MoonTime_Regular.ttf') format('truetype');
+}
+
+.neon-text {
+  font-family: 'Moontime', cursive;
+  position: fixed;
+  top: -50px;
+  left: 50px;
+  z-index: 0;
+
+  font-size: 125px;
+  font-weight: 110;
+  color: #ffffff;
+
+  text-shadow:
+    0 0 2px #fffbe6,
+    0 0 5px #fdfa00,
+    0 0 10px #fdfa00,
+    0 0 20px #fdfa00;
+
+  letter-spacing: 3px;
+
+  animation: flicker 2.5s infinite, flicker-glow 2.5s infinite;
+}
+
+@keyframes flicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0; }
+  21%, 23% { opacity: 0.2; }
+  54%, 56% { opacity: 0.1; }
+}
+
+@keyframes flicker-glow {
+  0%, 100% {
+    text-shadow:
+      0 0 2px #fffbe6,
+      0 0 5px #fdfa00,
+      0 0 10px #fdfa00,
+      0 0 20px #fdfa00;
+  }
+  50% {
+    text-shadow:
+      0 0 1px #fffbe6,
+      0 0 2px #fdfa00,
+      0 0 4px #fdfa00,
+      0 0 8px #fdfa00;
+  }
+}
+
+
+.neon-text {
+  animation: flicker 2s infinite alternate;
+}
+
+.plant-decor {
+  position: fixed;        /* 🔥 removes from layout */
+
+  top:-45px;              /* 👈 adjust this */
+  right: -132px;            /* 👈 adjust this */
+  width: 400px;            /* 🔥 controls size */
+  height: auto;
+  pointer-events: none;   /* 🔥 doesn’t block clicks */
+  z-index: 1;             /* behind UI but above clouds */
+}
+
+.light-decor {
+  position: fixed;        /* 🔥 removes from layout */
+
+  top: -100px;              /* 👈 adjust this */
+  left: 700px;            /* 👈 adjust this */
+  width: 700px;           /* 🔥 controls size */
+  height: auto;
+  pointer-events: none;   /* 🔥 doesn’t block clicks */
+  z-index: 1;  
+  transform: rotate(20deg);           /* behind UI but above clouds */
+}
+
+.light1-decor {
+  position: fixed;        /* 🔥 removes from layout */
+
+  top: -145px;              /* 👈 adjust this */
+  left: 800px;            /* 👈 adjust this */
+  width: 800px;           /* 🔥 controls size */
+  height: auto;
+  pointer-events: none;   /* 🔥 doesn’t block clicks */
+  z-index: 1;     
+  transform: rotate(11deg);        /* behind UI but above clouds */
+}
+
+.light2-decor {
+  position: fixed;        /* 🔥 removes from layout */
+
+  top: -100px;              /* 👈 adjust this */
+  left: 0px;            /* 👈 adjust this */
+  width: 800px;           /* 🔥 controls size */
+  height: auto;
+  pointer-events: none;   /* 🔥 doesn’t block clicks */
+  z-index: 1;
+  transform: rotate();            /* behind UI but above clouds */
+}
+
+
+.cdk-drag {
+  box-sizing: border-box;
+}
+.drop-zone {
+  flex: 0 0 auto;
+  width: auto;        /* 🔥 important */
+}
+.cdk-drag:active {
+  cursor: grabbing;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0 !important;
+  background: transparent;
+}
+
+.cdk-drag-animating {
+  transition: none !important;
+}
+
+.cdk-drag-dragging {
+  opacity: 0.5;
+}
